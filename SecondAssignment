@@ -1,0 +1,95 @@
+from fastapi import FastAPI
+
+
+app = FastAPI(title="Api")
+
+
+db_instance_department_types = [
+    {
+        "DNO": 10,
+        "DNAME": "Admin",
+    },
+    {
+        "DNO": 20,
+        "DNAME": "Accounts",
+    },
+    {
+        "DNO": 30,
+        "DNAME": "Sales",
+    },
+    {
+        "DNO": 40,
+        "DNAME": "Marketing",
+    },
+    {
+        "DNO": 50,
+        "DNAME": "Purchasing",
+    },
+]
+
+db_instance_employees = [
+    {
+        "ENO": 1,
+        "ENAME": "Amal",
+        "DNO": 10,
+        "SALARY": 30000,
+    },
+    {
+        "ENO": 2,
+        "ENAME": "Shyamal",
+        "DNO": 30,
+        "SALARY": 50000,
+    },
+    {
+        "ENO": 3,
+        "ENAME": "Kamal",
+        "DNO": 40,
+        "SALARY": 10000,
+    },
+    {
+        "ENO": 4,
+        "ENAME": "Nirmal",
+        "DNO": 50,
+        "SALARY": 60000,
+    },
+    {
+        "ENO": 5,
+        "ENAME": "Bimal",
+        "DNO": 20,
+        "SALARY": 40000,
+    },
+    {
+        "ENO": 6,
+        "ENAME": "Parimal",
+        "DNO": 10,
+        "SALARY": 200000,
+    },
+]
+
+
+@app.get("/api")
+async def search_by_ENO_and_DNAME(ENO: int = None, DNAME: str = None):
+    if ENO is not None:
+        for emp in db_instance_employees:
+            if emp["ENO"] == ENO:
+                return emp
+        return {"error": "Employee with ENO " + str(ENO) + " not found."}
+    elif DNAME is not None:
+        DNAME = DNAME.capitalize()
+        dno = None
+        for dep in db_instance_department_types:
+            if dep["DNAME"] == DNAME:
+                dno = dep["DNO"]
+        if dno is None:
+            return {"error": "Not a valid DNAME"}
+
+        emp_list = []
+        for emp in db_instance_employees:
+            if emp["DNO"] == dno:
+                emp_list.append(emp)
+        if len(emp_list) == 0:
+            return {"error": "No emp found with DNO " + str(dno)}
+
+        return emp_list
+    else:
+        return {"error": "Not a valid operation"}
